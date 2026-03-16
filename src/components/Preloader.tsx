@@ -9,7 +9,7 @@ const drawNode = {
   visible: (i: number) => ({
     scale: 1,
     opacity: 1,
-    transition: { delay: i * 0.4, type: "spring", stiffness: 200, damping: 15 },
+    transition: { delay: i * 0.4, type: "spring" as const, stiffness: 200, damping: 15 },
   }),
 };
 
@@ -21,9 +21,9 @@ const drawLine = {
     opacity: 1,
     strokeDashoffset: -24, // Flows left to right
     transition: {
-      pathLength: { delay: i * 0.4 + 0.3, type: "spring", stiffness: 80, damping: 20 },
+      pathLength: { delay: i * 0.4 + 0.3, type: "spring" as const, stiffness: 80, damping: 20 },
       opacity: { delay: i * 0.4 + 0.3, duration: 0.2 },
-      strokeDashoffset: { delay: i * 0.4 + 0.3, duration: 1.5, ease: "linear", repeat: Infinity },
+      strokeDashoffset: { delay: i * 0.4 + 0.3, duration: 1.5, ease: "linear" as const, repeat: Infinity },
     },
   }),
 };
