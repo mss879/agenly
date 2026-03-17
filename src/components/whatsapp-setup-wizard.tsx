@@ -243,7 +243,7 @@ export default function WhatsAppSetupWizard({
                     type="text"
                     value={phoneNumberId}
                     onChange={(e) => { setPhoneNumberId(e.target.value); setValidated(false); setError(""); }}
-                    placeholder="e.g. 1060567770467742"
+                    placeholder="e.g. 123456789012345"
                     className="w-full px-4 py-2.5 bg-surface-800/50 border border-surface-700 rounded-xl text-white placeholder-surface-500 outline-none focus:border-primary-500 transition-all text-sm font-mono"
                   />
                 </div>
@@ -269,7 +269,7 @@ export default function WhatsAppSetupWizard({
                     type="text"
                     value={wabaId}
                     onChange={(e) => setWabaId(e.target.value)}
-                    placeholder="e.g. 799317082696720"
+                    placeholder="e.g. 123456789012345"
                     className="w-full px-4 py-2.5 bg-surface-800/50 border border-surface-700 rounded-xl text-white placeholder-surface-500 outline-none focus:border-primary-500 transition-all text-sm font-mono"
                   />
                 </div>
