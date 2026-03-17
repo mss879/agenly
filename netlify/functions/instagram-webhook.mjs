@@ -219,7 +219,7 @@ Instructions:
 - Answer based on the provided knowledge when available.
 - If you don't know the answer, say so honestly.
 - Be helpful, concise, and professional.
-- Keep responses under 1000 characters for Instagram DMs.`;
+- This is an Instagram DM conversation, so keep responses clear and well-structured.`;
 
     const geminiBody = {
       contents: [
@@ -229,7 +229,7 @@ Instructions:
       systemInstruction: { parts: [{ text: systemPrompt }] },
       generationConfig: {
         temperature: 0.7,
-        maxOutputTokens: 512,
+        maxOutputTokens: 2048,
       },
     };
 
@@ -254,7 +254,7 @@ Instructions:
     const aiResponse = geminiData.candidates?.[0]?.content?.parts?.[0]?.text
       || "Sorry, I could not generate a response.";
 
-    console.log(`[IG Function] AI response: "${aiResponse.slice(0, 100)}..."`);
+    console.log(`[IG Function] AI response (${aiResponse.length} chars): "${aiResponse.slice(0, 100)}..."`);
 
     // Save messages
     await supabase.from("messages").insert([
@@ -262,26 +262,59 @@ Instructions:
       { conversation_id: conversationId, role: "assistant", content: aiResponse },
     ]);
 
-    // Send reply via Instagram Graph API
-    const sendRes = await fetch(
-      `https://graph.instagram.com/v21.0/me/messages`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          recipient: { id: senderId },
-          message: { text: aiResponse },
-        }),
+    // Split long messages into chunks (Instagram limit: 1000 chars per message)
+    const MAX_IG_MSG_LEN = 1000;
+    const messageChunks = [];
+    
+    if (aiResponse.length <= MAX_IG_MSG_LEN) {
+      messageChunks.push(aiResponse);
+    } else {
+      // Split at sentence boundaries where possible
+      let remaining = aiResponse;
+      while (remaining.length > 0) {
+        if (remaining.length <= MAX_IG_MSG_LEN) {
+          messageChunks.push(remaining);
+          break;
+        }
+        // Find last sentence break within limit
+        let splitIdx = remaining.lastIndexOf('. ', MAX_IG_MSG_LEN);
+        if (splitIdx === -1 || splitIdx < MAX_IG_MSG_LEN * 0.3) {
+          splitIdx = remaining.lastIndexOf(' ', MAX_IG_MSG_LEN);
+        }
+        if (splitIdx === -1) {
+          splitIdx = MAX_IG_MSG_LEN;
+        } else {
+          splitIdx += 1; // include the space/period
+        }
+        messageChunks.push(remaining.slice(0, splitIdx).trim());
+        remaining = remaining.slice(splitIdx).trim();
       }
-    );
+    }
 
-    if (!sendRes.ok) {
-      const err = await sendRes.text();
-      console.error(`[IG Function] Send failed: ${sendRes.status}`, err);
-      throw new Error(`Instagram send failed: ${sendRes.status}`);
+    console.log(`[IG Function] Sending ${messageChunks.length} message(s)`);
+
+    // Send each chunk as a separate Instagram message
+    for (const chunk of messageChunks) {
+      const sendRes = await fetch(
+        `https://graph.instagram.com/v21.0/me/messages`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            recipient: { id: senderId },
+            message: { text: chunk },
+          }),
+        }
+      );
+
+      if (!sendRes.ok) {
+        const err = await sendRes.text();
+        console.error(`[IG Function] Send failed: ${sendRes.status}`, err);
+        throw new Error(`Instagram send failed: ${sendRes.status}`);
+      }
     }
 
     console.log(`[IG Function] ✅ Reply sent to ${senderId}`);
