@@ -162,6 +162,7 @@ export default async (request) => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             content: { parts: [{ text: userMessage }] },
+            outputDimensionality: 768,
           }),
         }
       );
