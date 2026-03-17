@@ -1,9 +1,9 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "@supabase/supabase-js";
 
 // ─── Netlify Function v2: WhatsApp Webhook ───
-// This bypasses Next.js routing entirely to avoid Netlify's POST body stripping issue.
+// Bypasses Next.js routing to avoid Netlify's POST body stripping issue.
 
-export default async (request: Request) => {
+export default async (request) => {
   const url = new URL(request.url);
   const method = request.method;
 
@@ -15,7 +15,7 @@ export default async (request: Request) => {
   const challenge = url.searchParams.get("hub.challenge");
 
   if (mode === "subscribe" && challenge) {
-    const verifyToken = Deno.env.get("WHATSAPP_VERIFY_TOKEN");
+    const verifyToken = process.env.WHATSAPP_VERIFY_TOKEN;
     if (token === verifyToken) {
       console.log("[WA Function] ✅ Verification successful");
       return new Response(challenge, { status: 200 });
@@ -68,8 +68,7 @@ export default async (request: Request) => {
 
     const userMessage = message.text.body;
     const senderPhone = message.from;
-    const accessToken = Deno.env.get("WHATSAPP_ACCESS_TOKEN");
-    const envPhoneId = Deno.env.get("WHATSAPP_PHONE_NUMBER_ID");
+    const accessToken = process.env.WHATSAPP_ACCESS_TOKEN;
 
     console.log(`[WA Function] Processing: "${userMessage.slice(0, 80)}" from ${senderPhone}`);
 
@@ -92,11 +91,11 @@ export default async (request: Request) => {
     }
 
     // ─── Get AI Response ───
-    const supabaseUrl = Deno.env.get("NEXT_PUBLIC_SUPABASE_URL");
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-    const geminiKey = Deno.env.get("GEMINI_API_KEY");
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const geminiKey = process.env.GEMINI_API_KEY;
 
-    const supabase = createClient(supabaseUrl!, supabaseKey!);
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Find the first agent
     const { data: agent, error: agentError } = await supabase
@@ -108,8 +107,8 @@ export default async (request: Request) => {
 
     if (!agent) {
       console.error("[WA Function] No agent found:", agentError?.message);
-      await sendWhatsAppMessage(phoneNumberId, accessToken!, senderPhone,
-        "Sorry, no agent is configured yet. Please set up an agent first.");
+      await sendWhatsAppMessage(phoneNumberId, accessToken, senderPhone,
+        "Sorry, no agent is configured yet.");
       return new Response(JSON.stringify({ status: "ok" }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
@@ -129,7 +128,7 @@ export default async (request: Request) => {
       .limit(1)
       .maybeSingle();
 
-    let conversationId: string;
+    let conversationId;
 
     if (existingConv) {
       conversationId = existingConv.id;
@@ -160,7 +159,7 @@ export default async (request: Request) => {
       .order("created_at", { ascending: false })
       .limit(10);
 
-    const history = (recentMessages || []).reverse().map((m: { role: string; content: string }) => ({
+    const history = (recentMessages || []).reverse().map((m) => ({
       role: m.role === "assistant" ? "model" : "user",
       parts: [{ text: m.content }],
     }));
@@ -211,7 +210,7 @@ export default async (request: Request) => {
     ]);
 
     // Send reply via WhatsApp
-    await sendWhatsAppMessage(phoneNumberId, accessToken!, senderPhone, aiResponse);
+    await sendWhatsAppMessage(phoneNumberId, accessToken, senderPhone, aiResponse);
 
     console.log(`[WA Function] ✅ Reply sent to ${senderPhone}`);
 
@@ -229,13 +228,7 @@ export default async (request: Request) => {
 };
 
 // ─── Helper: Send WhatsApp Text Message ───
-async function sendWhatsAppMessage(
-  phoneNumberId: string,
-  accessToken: string,
-  to: string,
-  text: string
-) {
-  // Split into chunks if too long (WhatsApp limit: 4096 chars)
+async function sendWhatsAppMessage(phoneNumberId, accessToken, to, text) {
   const chunks = text.length <= 4000 ? [text] : splitText(text, 4000);
 
   for (const chunk of chunks) {
@@ -265,8 +258,8 @@ async function sendWhatsAppMessage(
   }
 }
 
-function splitText(text: string, maxLen: number): string[] {
-  const chunks: string[] = [];
+function splitText(text, maxLen) {
+  const chunks = [];
   let remaining = text;
   while (remaining.length > 0) {
     if (remaining.length <= maxLen) { chunks.push(remaining); break; }
