@@ -56,9 +56,9 @@ export async function GET(request: NextRequest) {
 
     const tokenData = await tokenRes.json();
     const shortLivedToken = tokenData.access_token;
-    const igUserId = String(tokenData.user_id);
+    let igUserId = String(tokenData.user_id); // app-scoped ID (fallback)
 
-    console.log(`[IG Callback] Got short-lived token for user ${igUserId}`);
+    console.log(`[IG Callback] Got short-lived token for app-scoped user ${igUserId}`);
 
     // Step 2: Exchange for long-lived token (60 days)
     const longTokenRes = await fetch(
@@ -80,6 +80,9 @@ export async function GET(request: NextRequest) {
     }
 
     // Step 3: Get Instagram user profile
+    // IMPORTANT: We need user_id from the profile API — this returns the IGSID
+    // which is the ID that appears in webhook payloads (recipient.id).
+    // The token exchange returns an app-scoped ID which is DIFFERENT.
     const profileRes = await fetch(
       `https://graph.instagram.com/v21.0/me?fields=user_id,username&access_token=${accessToken}`
     );
@@ -88,7 +91,13 @@ export async function GET(request: NextRequest) {
     if (profileRes.ok) {
       const profileData = await profileRes.json();
       username = profileData.username || "";
-      console.log(`[IG Callback] Profile: @${username}`);
+      // Use the IGSID (user_id from profile) — this matches webhook recipient.id
+      if (profileData.user_id) {
+        igUserId = String(profileData.user_id);
+        console.log(`[IG Callback] Profile IGSID: ${igUserId}, @${username}`);
+      } else {
+        console.warn(`[IG Callback] No user_id in profile, using app-scoped: ${igUserId}`);
+      }
     }
 
     // Step 4: Save to database
