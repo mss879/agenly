@@ -141,15 +141,18 @@ export class WhatsAppService {
     const envPhoneId = process.env.WHATSAPP_PHONE_NUMBER_ID;
     const envToken = process.env.WHATSAPP_ACCESS_TOKEN;
 
+    console.log(`[WhatsApp] lookupAgentConfig: envPhoneId=${envPhoneId}, incoming=${phoneNumberId}, match=${phoneNumberId === envPhoneId}`);
+
     if (envPhoneId && envToken && phoneNumberId === envPhoneId) {
-      // Find the first active agent to route messages to
-      const { data: agent } = await this.supabase
+      // Find the first agent to route messages to (any status — draft, active, etc.)
+      const { data: agent, error: agentError } = await this.supabase
         .from("agents")
-        .select("id, workspace_id")
-        .eq("status", "active")
+        .select("id, workspace_id, status")
         .order("created_at", { ascending: true })
         .limit(1)
         .single();
+
+      console.log(`[WhatsApp] Agent lookup result:`, agent ? `id=${agent.id}, status=${agent.status}` : `not found, error=${agentError?.message}`);
 
       if (agent) {
         return {
@@ -162,12 +165,14 @@ export class WhatsAppService {
     }
 
     // Phase 2: Check database (multi-agent mode) — for future
-    const { data: channel } = await this.supabase
+    const { data: channel, error: channelError } = await this.supabase
       .from("whatsapp_channels")
       .select("agent_id, workspace_id, access_token, phone_number_id")
       .eq("phone_number_id", phoneNumberId)
       .eq("is_active", true)
       .single();
+
+    console.log(`[WhatsApp] DB channel lookup:`, channel ? `agent=${channel.agent_id}` : `not found, error=${channelError?.message}`);
 
     if (channel) {
       return {

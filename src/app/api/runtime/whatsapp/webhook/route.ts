@@ -36,11 +36,15 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
+    console.log("[WhatsApp Webhook] POST received, body keys:", Object.keys(body));
+    console.log("[WhatsApp Webhook] Raw body:", JSON.stringify(body).slice(0, 500));
+
     // Parse the webhook payload
     const payload = whatsappService.parseIncomingWebhook(body);
 
     if (!payload) {
       // Not a message event (could be status update, etc.) — acknowledge it
+      console.log("[WhatsApp Webhook] No messages in payload — acknowledging");
       return NextResponse.json({ status: "ok" }, { status: 200 });
     }
 
@@ -49,8 +53,6 @@ export async function POST(request: NextRequest) {
     );
 
     // Process each message (usually just one per webhook call)
-    // We do this in the background so Meta gets a quick 200 response
-    // (Meta requires response within 20 seconds)
     const processingPromises = payload.messages.map((message) =>
       whatsappService
         .handleIncomingMessage(payload.phoneNumberId, message)
@@ -60,9 +62,9 @@ export async function POST(request: NextRequest) {
     );
 
     // Wait for all messages to be processed
-    // In production with high volume, you'd want to use a queue instead
     await Promise.all(processingPromises);
 
+    console.log("[WhatsApp Webhook] All messages processed successfully");
     return NextResponse.json({ status: "ok" }, { status: 200 });
   } catch (error) {
     console.error("[WhatsApp Webhook] Error:", error);
