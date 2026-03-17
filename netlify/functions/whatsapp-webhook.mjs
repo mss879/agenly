@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 
 // ─── Netlify Function v2: WhatsApp Webhook ───
 // Bypasses Next.js routing to avoid Netlify's POST body stripping issue.
+// Multi-tenant: routes messages to the correct agent via whatsapp_channels table.
 
 export default async (request) => {
   const url = new URL(request.url);
@@ -9,14 +10,29 @@ export default async (request) => {
 
   console.log(`[WA Function] ${method} request received`);
 
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const geminiKey = process.env.GEMINI_API_KEY;
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
   // ─── Webhook Verification (Meta sends GET with hub.* params) ───
   const mode = url.searchParams.get("hub.mode");
   const token = url.searchParams.get("hub.verify_token");
   const challenge = url.searchParams.get("hub.challenge");
 
   if (mode === "subscribe" && challenge) {
-    const verifyToken = process.env.WHATSAPP_VERIFY_TOKEN;
-    if (token === verifyToken) {
+    // Check against all stored verify tokens in whatsapp_channels
+    const { data: channels } = await supabase
+      .from("whatsapp_channels")
+      .select("verify_token")
+      .eq("is_active", true);
+
+    const match = (channels || []).some((ch) => ch.verify_token === token);
+
+    // Also check env fallback for legacy support
+    const envToken = process.env.WHATSAPP_VERIFY_TOKEN;
+
+    if (match || token === envToken) {
       console.log("[WA Function] ✅ Verification successful");
       return new Response(challenge, { status: 200 });
     }
@@ -68,9 +84,49 @@ export default async (request) => {
 
     const userMessage = message.text.body;
     const senderPhone = message.from;
-    const accessToken = process.env.WHATSAPP_ACCESS_TOKEN;
 
     console.log(`[WA Function] Processing: "${userMessage.slice(0, 80)}" from ${senderPhone}`);
+
+    // ─── Multi-Tenant: Look up channel by phone_number_id ───
+    let agent, accessToken;
+
+    const { data: channel } = await supabase
+      .from("whatsapp_channels")
+      .select("id, agent_id, access_token, agents(id, workspace_id, system_prompt, chat_model)")
+      .eq("phone_number_id", phoneNumberId)
+      .eq("is_active", true)
+      .maybeSingle();
+
+    if (channel && channel.agents) {
+      // Multi-tenant: use channel credentials and linked agent
+      agent = channel.agents;
+      accessToken = channel.access_token;
+      console.log(`[WA Function] Matched channel → agent: ${agent.id} (${agent.chat_model})`);
+    } else {
+      // Fallback: use env vars and first agent (legacy mode)
+      console.log("[WA Function] No channel found, using legacy fallback");
+      accessToken = process.env.WHATSAPP_ACCESS_TOKEN;
+
+      const { data: fallbackAgent, error: agentError } = await supabase
+        .from("agents")
+        .select("id, workspace_id, system_prompt, chat_model")
+        .order("created_at", { ascending: true })
+        .limit(1)
+        .single();
+
+      if (!fallbackAgent) {
+        console.error("[WA Function] No agent found:", agentError?.message);
+        await sendWhatsAppMessage(phoneNumberId, accessToken, senderPhone,
+          "Sorry, no agent is configured yet.");
+        return new Response(JSON.stringify({ status: "ok" }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      agent = fallbackAgent;
+    }
+
+    console.log(`[WA Function] Using agent: ${agent.id} (${agent.chat_model})`);
 
     // Mark as read
     try {
@@ -89,33 +145,6 @@ export default async (request) => {
     } catch (e) {
       console.error("[WA Function] Mark read failed:", e);
     }
-
-    // ─── Get AI Response ───
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    const geminiKey = process.env.GEMINI_API_KEY;
-
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // Find the first agent
-    const { data: agent, error: agentError } = await supabase
-      .from("agents")
-      .select("id, workspace_id, system_prompt, chat_model")
-      .order("created_at", { ascending: true })
-      .limit(1)
-      .single();
-
-    if (!agent) {
-      console.error("[WA Function] No agent found:", agentError?.message);
-      await sendWhatsAppMessage(phoneNumberId, accessToken, senderPhone,
-        "Sorry, no agent is configured yet.");
-      return new Response(JSON.stringify({ status: "ok" }), {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
-
-    console.log(`[WA Function] Using agent: ${agent.id} (${agent.chat_model})`);
 
     // Get or create conversation
     const { data: existingConv } = await supabase
@@ -154,7 +183,6 @@ export default async (request) => {
     // ─── Knowledge Base Retrieval ───
     let contextText = "";
     try {
-      // Step 1: Embed the user's query using Gemini Embedding API
       const embRes = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-2-preview:embedContent?key=${geminiKey}`,
         {
@@ -174,7 +202,6 @@ export default async (request) => {
         if (queryEmbedding && queryEmbedding.length > 0) {
           console.log(`[WA Function] Query embedding: ${queryEmbedding.length} dims`);
 
-          // Step 2: Vector search via Supabase RPC
           const { data: matches, error: rpcError } = await supabase.rpc(
             "match_knowledge_embeddings",
             {
@@ -190,7 +217,6 @@ export default async (request) => {
           } else if (matches && matches.length > 0) {
             console.log(`[WA Function] Found ${matches.length} knowledge matches`);
 
-            // Step 3: Fetch the actual chunk content
             const chunkIds = matches.map((m) => m.chunk_id);
             const { data: chunks } = await supabase
               .from("knowledge_chunks")
@@ -198,7 +224,6 @@ export default async (request) => {
               .in("id", chunkIds);
 
             if (chunks && chunks.length > 0) {
-              // Sort by similarity (match the order from RPC results)
               const sortedChunks = chunkIds
                 .map((id) => chunks.find((c) => c.id === id))
                 .filter(Boolean);
@@ -232,7 +257,7 @@ export default async (request) => {
       parts: [{ text: m.content }],
     }));
 
-    // Build the Gemini request (with knowledge context in system prompt)
+    // Build the Gemini request
     const model = agent.chat_model || "gemini-2.0-flash";
     const basePrompt = agent.system_prompt || "You are a helpful AI assistant.";
     const systemPrompt = `${basePrompt}${contextText}
