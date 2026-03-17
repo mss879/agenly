@@ -151,6 +151,73 @@ export default async (request) => {
       conversationId = newConv.id;
     }
 
+    // ─── Knowledge Base Retrieval ───
+    let contextText = "";
+    try {
+      // Step 1: Embed the user's query using Gemini Embedding API
+      const embRes = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-2-preview:embedContent?key=${geminiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            content: { parts: [{ text: userMessage }] },
+          }),
+        }
+      );
+
+      if (embRes.ok) {
+        const embData = await embRes.json();
+        const queryEmbedding = embData?.embedding?.values;
+
+        if (queryEmbedding && queryEmbedding.length > 0) {
+          console.log(`[WA Function] Query embedding: ${queryEmbedding.length} dims`);
+
+          // Step 2: Vector search via Supabase RPC
+          const { data: matches, error: rpcError } = await supabase.rpc(
+            "match_knowledge_embeddings",
+            {
+              query_embedding: JSON.stringify(queryEmbedding),
+              match_agent_id: agent.id,
+              match_count: 5,
+              match_threshold: 0.3,
+            }
+          );
+
+          if (rpcError) {
+            console.error("[WA Function] RPC error:", rpcError.message);
+          } else if (matches && matches.length > 0) {
+            console.log(`[WA Function] Found ${matches.length} knowledge matches`);
+
+            // Step 3: Fetch the actual chunk content
+            const chunkIds = matches.map((m) => m.chunk_id);
+            const { data: chunks } = await supabase
+              .from("knowledge_chunks")
+              .select("id, content")
+              .in("id", chunkIds);
+
+            if (chunks && chunks.length > 0) {
+              // Sort by similarity (match the order from RPC results)
+              const sortedChunks = chunkIds
+                .map((id) => chunks.find((c) => c.id === id))
+                .filter(Boolean);
+
+              contextText = `\n\nRelevant knowledge:\n${sortedChunks
+                .map((c, i) => `[${i + 1}] ${c.content}`)
+                .join("\n\n")}`;
+              console.log(`[WA Function] Added ${sortedChunks.length} knowledge chunks to context`);
+            }
+          } else {
+            console.log("[WA Function] No knowledge matches found");
+          }
+        }
+      } else {
+        console.error("[WA Function] Embedding API error:", embRes.status);
+      }
+    } catch (e) {
+      console.error("[WA Function] Knowledge retrieval error (continuing without):", e);
+    }
+
     // Get recent messages for context
     const { data: recentMessages } = await supabase
       .from("messages")
@@ -164,9 +231,15 @@ export default async (request) => {
       parts: [{ text: m.content }],
     }));
 
-    // Build the Gemini request
+    // Build the Gemini request (with knowledge context in system prompt)
     const model = agent.chat_model || "gemini-2.0-flash";
-    const systemPrompt = agent.system_prompt || "You are a helpful AI assistant.";
+    const basePrompt = agent.system_prompt || "You are a helpful AI assistant.";
+    const systemPrompt = `${basePrompt}${contextText}
+
+Instructions:
+- Answer based on the provided knowledge when available.
+- If you don't know the answer, say so honestly.
+- Be helpful, concise, and professional.`;
 
     const geminiBody = {
       contents: [
