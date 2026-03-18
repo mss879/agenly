@@ -682,11 +682,13 @@ Instructions:
       console.log(`[IG Function] Tool result (${provider}.${action}):`, result.success ? "SUCCESS" : "FAILED", result.message);
 
       // Feed result back to Gemini for next response
+      // IMPORTANT: Pass the model's original parts (includes thought_signature
+      // required by gemini-3.x models) instead of manually reconstructing them.
       const followUpBody = {
         contents: [
           ...history,
           { role: "user", parts: [{ text: messageText }] },
-          { role: "model", parts: [{ functionCall: { name: fc.name, args: fc.args || {} } }] },
+          { role: "model", parts },
           {
             role: "function",
             parts: [{
