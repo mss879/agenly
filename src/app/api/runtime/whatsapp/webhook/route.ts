@@ -28,7 +28,7 @@ async function handleWebhook(request: NextRequest) {
   // ─── Incoming message webhook (POST body) ───
   try {
     const bodyText = await request.text();
-    
+
     if (!bodyText || bodyText.length < 2) {
       console.log("[WhatsApp Webhook] Empty body — likely a ping or health check, acknowledging");
       return NextResponse.json({ status: "ok" }, { status: 200 });
