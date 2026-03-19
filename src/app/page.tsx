@@ -55,7 +55,7 @@ export default function HomePage() {
   const heroOpacity = useTransform(scrollY, [0, 800], [1, isMobile ? 1 : 0.3]);
 
   return (
-    <div className="min-h-screen bg-[#0A0A0B] text-white relative overflow-x-clip">
+    <div className="min-h-screen bg-[#0A0A0B] text-white relative overflow-clip">
       <AnimatePresence>
         {!isPreloaderDone && (
           <Preloader key="preloader" onComplete={() => setIsPreloaderDone(true)} />
@@ -289,7 +289,7 @@ export default function HomePage() {
 
                         <div className="flex items-start gap-4 sm:gap-6 relative z-10">
                           <div className="flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-50 to-white shadow-sm border border-gray-100 text-purple-600 group-hover:scale-110 transition-transform duration-500 ease-out">
-                              <b.icon size={22} className="text-purple-600" />
+                            <b.icon size={22} className="text-purple-600" />
                           </div>
 
                           <div className="flex-1 mt-1">
@@ -344,16 +344,22 @@ export default function HomePage() {
         </section>
 
         {/* ─── Footer ─── */}
-        <footer className="relative z-10 border-t border-gray-200 py-8 px-6 bg-[#fafafa]">
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+        <footer className="relative z-10 border-t border-gray-800 py-8 px-6 bg-[#0A0A0B] text-white rounded-b-none">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-4">
             <div className="flex items-center gap-3">
-              <Image src="/logo.png" alt="Agenly" width={24} height={24} className="brightness-0" />
-              <span className="text-xs font-bold text-gray-400 tracking-[0.15em]">AGENLY</span>
+              <Image src="/logo.png" alt="Agenly" width={24} height={24} />
+              <span className="text-xs font-bold text-white tracking-[0.15em]">AGENLY</span>
             </div>
-            <a href="https://www.arcai.agency" target="_blank" rel="noopener noreferrer" className="text-[11px] text-gray-400 font-medium hover:text-purple-600 transition-colors">
-              Designed by ARC AI
+            <a 
+              href="https://www.arcai.agency" 
+              target="_blank" 
+              rel="noopener" 
+              title="ARC AI - Web Design & Digital Solutions"
+              className="text-[11px] text-gray-400 font-medium hover:text-white transition-colors flex items-center gap-2"
+            >
+              Designed & Developed by <img src="/arc-logo.png" alt="ARC AI - Web Design & Digital Solutions" className="h-7 sm:h-8 w-auto object-contain translate-y-[2px]" />
             </a>
-            <p className="text-[11px] text-gray-400 font-medium">© 2026 Agenly. All rights reserved.</p>
+            <p className="text-[11px] text-gray-400 font-medium text-center sm:text-left">© 2026 Agenly. All rights reserved.</p>
           </div>
         </footer>
       </div>
