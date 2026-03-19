@@ -43,7 +43,7 @@ export default function TrialExpiredPage() {
       <div className="max-w-3xl w-full relative z-10 text-center">
         {/* Logo */}
         <div className="inline-flex items-center gap-3 mb-8">
-          <Image src="/logo.png" alt="Agenly Logo" width={48} height={48} className="object-contain" />
+          <Image src="/logo.webp" alt="Agenly Logo" width={48} height={48} className="object-contain" />
           <span className="text-2xl font-bold text-white tracking-widest">AGENLY</span>
         </div>
 

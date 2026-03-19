@@ -66,7 +66,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {/* Logo */}
           <div className="p-6">
             <Link href="/admin" className="flex items-center gap-3">
-              <Image src="/logo.png" alt="Agenly Logo" width={40} height={40} className="object-contain" />
+              <Image src="/logo.webp" alt="Agenly Logo" width={40} height={40} className="object-contain" />
               <div>
                 <span className="text-lg font-bold text-white tracking-widest">AGENLY</span>
                 <span className="block text-[10px] font-bold tracking-[0.3em] text-red-400 uppercase">Admin Panel</span>

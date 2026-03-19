@@ -9,6 +9,7 @@ import Preloader from "@/components/Preloader";
 import AnimatedFeatures from "@/components/landing/AnimatedFeatures";
 import OurProcess from "@/components/landing/OurProcess";
 import Services from "@/components/landing/Services";
+import Pricing from "@/components/landing/Pricing";
 
 
 
@@ -100,25 +101,49 @@ export default function HomePage() {
                 transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1] }}
                 className="absolute top-0 left-0 right-0 w-full flex justify-between items-center z-30 px-6 sm:px-10 pt-5">
                 <Link href="/" className="flex items-center gap-3">
-                  <Image src="/logo.png" alt="Agenly Logo" width={64} height={64} className="object-contain w-14 h-14 md:w-16 md:h-16" />
+                  <Image src="/logo.webp" alt="Agenly Logo" width={64} height={64} className="object-contain w-14 h-14 md:w-16 md:h-16" />
                   <span className="hidden md:inline text-xl font-bold text-[#0A0A0B] tracking-[0.2em]">AGENLY</span>
                 </Link>
 
-                {/* Desktop: SIGN IN button */}
-                <Link
-                  href="/login"
-                  className="hidden md:inline-flex btn-3d-purple px-8 py-3 text-white text-base font-bold font-beras transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
-                >
-                  <span className="relative z-10 drop-shadow-md">SIGN IN</span>
-                </Link>
+                {/* Desktop: SIGN IN button - Phase 1 Coming Soon */}
+                <div className="hidden md:inline-flex relative">
+                  <button
+                    disabled
+                    className="btn-3d-purple px-8 py-3 text-white text-base font-bold font-beras transition-all duration-300 opacity-80 cursor-not-allowed"
+                  >
+                    <span className="relative z-10 drop-shadow-md">SIGN IN</span>
+                  </button>
+                  <span className="absolute -top-2.5 -right-2.5 bg-gray-900 text-white text-[9px] font-bold px-2 py-0.5 rounded-full border border-gray-700 shadow-xl z-20 whitespace-nowrap tracking-widest uppercase">
+                    Coming Soon
+                  </span>
+                </div>
 
                 {/* Mobile: Hamburger button */}
                 <button
                   onClick={() => setMobileMenuOpen(true)}
-                  className="md:hidden w-10 h-10 rounded-xl bg-[#0A0A0B] flex items-center justify-center text-white shadow-lg"
+                  className="md:hidden w-10 h-10 rounded-xl bg-[#0A0A0B] flex items-center justify-center text-white shadow-lg relative overflow-hidden group"
                   aria-label="Open menu"
                 >
-                  <Menu size={20} />
+                  {/* Subtle Tech Scanline behind */}
+                  <motion.div 
+                    animate={{ y: ["-100%", "200%"] }} 
+                    transition={{ duration: 1.5, ease: "linear", repeat: Infinity }} 
+                    className="absolute left-0 right-0 h-6 bg-gradient-to-b from-transparent via-purple-500/20 to-transparent z-0 pointer-events-none" 
+                  />
+                  {/* Dynamic Lines */}
+                  <div className="flex flex-col justify-between w-4 h-3 relative z-10 pointer-events-none">
+                    <motion.span 
+                      animate={{ width: ["100%", "65%", "100%"] }} 
+                      transition={{ duration: 2, ease: "easeInOut", repeat: Infinity }} 
+                      className="h-[2px] bg-white rounded-full self-end shadow-[0_0_8px_rgba(255,255,255,0.8)]" 
+                    />
+                    <span className="h-[2px] w-full bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+                    <motion.span 
+                      animate={{ width: ["100%", "75%", "100%"] }} 
+                      transition={{ duration: 2, ease: "easeInOut", repeat: Infinity, delay: 0.5 }} 
+                      className="h-[2px] bg-white rounded-full self-start shadow-[0_0_8px_rgba(255,255,255,0.8)]" 
+                    />
+                  </div>
                 </button>
               </motion.header>
             )}
@@ -149,10 +174,15 @@ export default function HomePage() {
                   <div className="flex justify-end p-5">
                     <button
                       onClick={() => setMobileMenuOpen(false)}
-                      className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white"
+                      className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white relative overflow-hidden active:scale-95 transition-transform"
                       aria-label="Close menu"
                     >
-                      <X size={20} />
+                      <motion.div 
+                        animate={{ rotate: 360 }} 
+                        transition={{ duration: 8, ease: "linear", repeat: Infinity }} 
+                        className="absolute inset-[2px] rounded-xl border border-dashed border-white/20 pointer-events-none" 
+                      />
+                      <X size={20} className="relative z-10 text-white/90 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]" />
                     </button>
                   </div>
 
@@ -174,15 +204,17 @@ export default function HomePage() {
                     ))}
                   </nav>
 
-                  {/* Sign In CTA */}
-                  <div className="mt-auto p-6">
-                    <Link
-                      href="/login"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="btn-3d-purple w-full flex items-center justify-center px-8 py-3.5 text-white text-base font-bold font-beras"
+                  {/* Sign In CTA - Phase 1 Coming Soon */}
+                  <div className="mt-auto p-6 relative">
+                    <button
+                      disabled
+                      className="btn-3d-purple w-full flex items-center justify-center px-8 py-3.5 text-white text-base font-bold font-beras cursor-not-allowed opacity-80"
                     >
                       <span className="relative z-10 drop-shadow-md">SIGN IN</span>
-                    </Link>
+                    </button>
+                    <span className="absolute top-3.5 right-3.5 bg-gray-900 text-white text-[9px] font-bold px-2 py-0.5 rounded-full border border-gray-700 shadow-xl z-20 whitespace-nowrap tracking-widest uppercase">
+                      Coming Soon
+                    </span>
                   </div>
                 </motion.div>
               )}
@@ -223,7 +255,7 @@ export default function HomePage() {
                 transition={{ duration: 1.2, delay: 0.7 + words.length * 0.1, ease: [0.25, 1, 0.5, 1] }}
                 className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[550px] z-20 translate-y-2 sm:translate-y-4">
                 <Image
-                  src="/hero-img.png"
+                  src="/hero-img.webp"
                   alt="Agenly AI Platform"
                   width={900}
                   height={600}
@@ -309,6 +341,9 @@ export default function HomePage() {
         {/* ─── Animated Features ─── */}
         <AnimatedFeatures />
 
+        {/* ─── Pricing ─── */}
+        <Pricing />
+
         {/* ─── Our Process ─── */}
         <OurProcess />
 
@@ -333,12 +368,17 @@ export default function HomePage() {
                 Your competitors are already using AI. Don&apos;t get left behind. Create your first agent today — no code, no credit card, no catch.
               </p>
 
-              <Link
-                href="/login"
-                className="relative z-10 btn-3d-purple inline-flex items-center justify-center px-10 py-4 text-white text-base lg:text-lg font-bold font-beras uppercase tracking-wider transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
-              >
-                <span className="relative z-10 drop-shadow-md">Get Started Free →</span>
-              </Link>
+              <div className="relative inline-flex z-10">
+                <button
+                  disabled
+                  className="btn-3d-purple inline-flex items-center justify-center px-10 py-4 text-white text-base lg:text-lg font-bold font-beras uppercase tracking-wider opacity-80 cursor-not-allowed"
+                >
+                  <span className="relative z-10 drop-shadow-md">Get Started Free →</span>
+                </button>
+                <span className="absolute -top-3 -right-3 bg-gray-900 text-white text-[10px] font-bold px-2.5 py-1 rounded-full border border-gray-700 shadow-xl z-20 whitespace-nowrap tracking-widest uppercase">
+                  Coming Soon
+                </span>
+              </div>
             </div>
           </div>
         </section>
@@ -347,7 +387,7 @@ export default function HomePage() {
         <footer className="relative z-10 border-t border-gray-800 py-8 px-6 bg-[#0A0A0B] text-white rounded-b-none">
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-4">
             <div className="flex items-center gap-3">
-              <Image src="/logo.png" alt="Agenly" width={24} height={24} />
+              <Image src="/logo.webp" alt="Agenly" width={24} height={24} />
               <span className="text-xs font-bold text-white tracking-[0.15em]">AGENLY</span>
             </div>
             <a 
@@ -357,7 +397,7 @@ export default function HomePage() {
               title="ARC AI - Web Design & Digital Solutions"
               className="text-[11px] text-gray-400 font-medium hover:text-white transition-colors flex items-center gap-2"
             >
-              Designed & Developed by <img src="/arc-logo.png" alt="ARC AI - Web Design & Digital Solutions" className="h-7 sm:h-8 w-auto object-contain translate-y-[2px]" />
+              Designed & Developed by <img src="/arc-logo.webp" alt="ARC AI - Web Design & Digital Solutions" className="h-7 sm:h-8 w-auto object-contain translate-y-[2px]" />
             </a>
             <p className="text-[11px] text-gray-400 font-medium text-center sm:text-left">© 2026 Agenly. All rights reserved.</p>
           </div>

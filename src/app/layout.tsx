@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     description: "Create, manage, and deploy intelligent AI agents for client businesses with isolated knowledge bases and advanced embeddings.",
     url: "https://agenly.app",
     siteName: "Agenly",
-    images: [{ url: "/logo.png", width: 800, height: 600, alt: "Agenly Logo" }],
+    images: [{ url: "/logo.webp", width: 800, height: 600, alt: "Agenly Logo" }],
     locale: "en_US",
     type: "website",
   },
@@ -18,12 +18,12 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Agenly",
     description: "Deploy and manage custom AI agents tailored for your enterprise.",
-    images: ["/logo.png"],
+    images: ["/logo.webp"],
   },
   icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: "/logo.webp",
+    shortcut: "/logo.webp",
+    apple: "/logo.webp",
   }
 };
 

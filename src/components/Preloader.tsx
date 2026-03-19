@@ -33,8 +33,8 @@ export default function Preloader({ onComplete }: { onComplete: () => void }) {
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
-    const isMob = window.innerWidth < 768;
-    const delay = isMob ? 2500 : 4200;
+    // Ensure both desktop and mobile get enough time for the full animation sequence
+    const delay = 4200;
     
     const timer = setTimeout(() => {
       onComplete();
@@ -68,68 +68,58 @@ export default function Preloader({ onComplete }: { onComplete: () => void }) {
 
       <div className="relative z-10 w-full max-w-3xl md:max-w-4xl lg:max-w-5xl px-6 flex flex-col items-center justify-center">
         
-        {/* Horizontal Pipeline SVG (ViewBox adjusted for width) */}
+        {/* Horizontal Pipeline SVG (Desktop) */}
         <motion.svg 
           viewBox="0 0 600 200" 
-          className="w-full drop-shadow-[0_0_20px_rgba(124,58,237,0.4)]"
+          className="hidden md:block w-full drop-shadow-[0_0_20px_rgba(124,58,237,0.4)]"
           animate={{ opacity: [1, 1, 0.4] }}
           transition={{ times: [0, 0.8, 1], duration: 4.2, ease: "easeOut" }}
         >
-          
           {/* Horizontal Data Streams */}
-          {/* Create -> Train */}
           <motion.line x1="80" y1="100" x2="180" y2="100" stroke="#A855F7" strokeWidth="2" strokeDasharray="4 8" strokeLinecap="round" custom={0} variants={drawLine} initial="hidden" animate="visible" />
-          {/* Train -> Deploy */}
           <motion.line x1="220" y1="100" x2="320" y2="100" stroke="#A855F7" strokeWidth="2" strokeDasharray="4 8" strokeLinecap="round" custom={1} variants={drawLine} initial="hidden" animate="visible" />
-          {/* Deploy -> Agent */}
           <motion.line x1="360" y1="100" x2="470" y2="100" stroke="#A855F7" strokeWidth="2" strokeDasharray="4 8" strokeLinecap="round" custom={2} variants={drawLine} initial="hidden" animate="visible" />
           
           {/* Sequence Nodes */}
-          {/* 1. Create */}
           <motion.circle cx="60" cy="100" r="8" fill="#D8B4FE" custom={0} variants={drawNode} initial="hidden" animate="visible" />
           <motion.text x="60" y="140" fill="#A78BFA" fontSize="11" fontWeight="bold" textAnchor="middle" letterSpacing="3" className="font-beras" initial={{ opacity: 0 }} animate={{ opacity: 0.8 }} transition={{ delay: 0.2, duration: 1 }}>CREATE</motion.text>
           
-          {/* 2. Train */}
           <motion.circle cx="200" cy="100" r="8" fill="#D8B4FE" custom={1} variants={drawNode} initial="hidden" animate="visible" />
           <motion.text x="200" y="140" fill="#A78BFA" fontSize="11" fontWeight="bold" textAnchor="middle" letterSpacing="3" className="font-beras" initial={{ opacity: 0 }} animate={{ opacity: 0.8 }} transition={{ delay: 0.6, duration: 1 }}>TRAIN</motion.text>
           
-          {/* 3. Deploy */}
           <motion.circle cx="340" cy="100" r="8" fill="#D8B4FE" custom={2} variants={drawNode} initial="hidden" animate="visible" />
           <motion.text x="340" y="140" fill="#A78BFA" fontSize="11" fontWeight="bold" textAnchor="middle" letterSpacing="3" className="font-beras" initial={{ opacity: 0 }} animate={{ opacity: 0.8 }} transition={{ delay: 1.0, duration: 1 }}>DEPLOY</motion.text>
 
-          {/* 4. The Final Agent Core */}
-          <motion.circle 
-            cx="510" cy="100" r="28" 
-            fill="#7C3AED" 
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 1.6, type: "spring", stiffness: 150, damping: 10 }}
-          />
-          {/* Agent Shockwave */}
-          <motion.circle 
-            cx="510" cy="100" r="28" 
-            fill="transparent" 
-            stroke="#C084FC" 
-            strokeWidth="3"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: [0, 2], opacity: [0, 1, 0] }}
-            transition={{ delay: 1.6, duration: 1.5, ease: "easeOut" }}
-          />
+          <motion.circle cx="510" cy="100" r="28" fill="#7C3AED" initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 1.6, type: "spring", stiffness: 150, damping: 10 }} />
+          <motion.circle cx="510" cy="100" r="28" fill="transparent" stroke="#C084FC" strokeWidth="3" initial={{ scale: 0, opacity: 0 }} animate={{ scale: [0, 2], opacity: [0, 1, 0] }} transition={{ delay: 1.6, duration: 1.5, ease: "easeOut" }} />
+          <motion.text x="510" y="104" fill="#fff" fontSize="10" fontWeight="bold" textAnchor="middle" letterSpacing="2" initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 1.8, duration: 0.5, type: "spring" }} className="font-beras">AGENT</motion.text>
+        </motion.svg>
 
-          <motion.text 
-            x="510" y="104" 
-            fill="#fff" 
-            fontSize="10" 
-            fontWeight="bold" 
-            textAnchor="middle" 
-            letterSpacing="2"
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 1.8, duration: 0.5, type: "spring" }}
-            className="font-beras"
-          >
-            AGENT
-          </motion.text>
+        {/* Vertical Pipeline SVG (Mobile) */}
+        <motion.svg 
+          viewBox="0 0 300 480" 
+          className="md:hidden w-full max-h-[55vh] drop-shadow-[0_0_20px_rgba(124,58,237,0.4)]"
+          animate={{ opacity: [1, 1, 0.4] }}
+          transition={{ times: [0, 0.8, 1], duration: 4.2, ease: "easeOut" }}
+        >
+          {/* Vertical Data Streams */}
+          <motion.line x1="150" y1="80" x2="150" y2="140" stroke="#A855F7" strokeWidth="2" strokeDasharray="4 8" strokeLinecap="round" custom={0} variants={drawLine} initial="hidden" animate="visible" />
+          <motion.line x1="150" y1="190" x2="150" y2="250" stroke="#A855F7" strokeWidth="2" strokeDasharray="4 8" strokeLinecap="round" custom={1} variants={drawLine} initial="hidden" animate="visible" />
+          <motion.line x1="150" y1="300" x2="150" y2="360" stroke="#A855F7" strokeWidth="2" strokeDasharray="4 8" strokeLinecap="round" custom={2} variants={drawLine} initial="hidden" animate="visible" />
+          
+          {/* Sequence Nodes */}
+          <motion.circle cx="150" cy="60" r="10" fill="#D8B4FE" custom={0} variants={drawNode} initial="hidden" animate="visible" />
+          <motion.text x="100" y="64" fill="#A78BFA" fontSize="14" fontWeight="bold" textAnchor="end" letterSpacing="2" className="font-beras" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 0.8, x: 0 }} transition={{ delay: 0.2, duration: 1 }}>CREATE</motion.text>
+          
+          <motion.circle cx="150" cy="170" r="10" fill="#D8B4FE" custom={1} variants={drawNode} initial="hidden" animate="visible" />
+          <motion.text x="200" y="174" fill="#A78BFA" fontSize="14" fontWeight="bold" textAnchor="start" letterSpacing="2" className="font-beras" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 0.8, x: 0 }} transition={{ delay: 0.6, duration: 1 }}>TRAIN</motion.text>
+          
+          <motion.circle cx="150" cy="280" r="10" fill="#D8B4FE" custom={2} variants={drawNode} initial="hidden" animate="visible" />
+          <motion.text x="100" y="284" fill="#A78BFA" fontSize="14" fontWeight="bold" textAnchor="end" letterSpacing="2" className="font-beras" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 0.8, x: 0 }} transition={{ delay: 1.0, duration: 1 }}>DEPLOY</motion.text>
+
+          <motion.circle cx="150" cy="410" r="32" fill="#7C3AED" initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 1.6, type: "spring", stiffness: 150, damping: 10 }} />
+          <motion.circle cx="150" cy="410" r="32" fill="transparent" stroke="#C084FC" strokeWidth="3" initial={{ scale: 0, opacity: 0 }} animate={{ scale: [0, 2], opacity: [0, 1, 0] }} transition={{ delay: 1.6, duration: 1.5, ease: "easeOut" }} />
+          <motion.text x="150" y="414" fill="#fff" fontSize="12" fontWeight="bold" textAnchor="middle" letterSpacing="3" initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 1.8, duration: 0.5, type: "spring" }} className="font-beras">AGENT</motion.text>
         </motion.svg>
 
         {/* Cinematic Typography Mask Reveal for Brand */}

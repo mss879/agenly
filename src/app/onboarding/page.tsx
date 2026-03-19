@@ -120,7 +120,7 @@ export default function OnboardingPage() {
         {/* Logo */}
         <div className="text-center mb-4">
           <div className="inline-flex items-center gap-2.5">
-            <Image src="/logo.png" alt="Agenly Logo" width={36} height={36} className="object-contain" />
+            <Image src="/logo.webp" alt="Agenly Logo" width={36} height={36} className="object-contain" />
             <span className="text-lg font-bold text-white tracking-widest">AGENLY</span>
           </div>
         </div>

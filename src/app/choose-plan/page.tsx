@@ -104,7 +104,7 @@ export default function ChoosePlanPage() {
         {/* Header */}
         <div className="text-center mb-6">
           <div className="inline-flex items-center gap-2.5 mb-3">
-            <Image src="/logo.png" alt="Agenly Logo" width={36} height={36} className="object-contain" />
+            <Image src="/logo.webp" alt="Agenly Logo" width={36} height={36} className="object-contain" />
             <span className="text-xl font-bold text-white tracking-widest">AGENLY</span>
           </div>
           <h1 className="text-3xl font-bold text-white mb-1">Choose Your Plan</h1>

@@ -94,7 +94,7 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="p-6 flex items-center justify-between">
         <Link href="/dashboard" className="flex items-center gap-3">
-          <Image src="/logo.png" alt="Agenly Logo" width={48} height={48} className="object-contain" />
+          <Image src="/logo.webp" alt="Agenly Logo" width={48} height={48} className="object-contain" />
           <span className="text-xl font-bold text-white tracking-widest">AGENLY</span>
         </Link>
         {/* Close button — mobile only */}
@@ -192,7 +192,7 @@ export default function Sidebar() {
       {/* Mobile top bar with hamburger */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 h-16 bg-[#0A0A0B]/80 backdrop-blur-xl border-b border-white/[0.06] flex items-center justify-between px-4">
         <Link href="/dashboard" className="flex items-center gap-2">
-          <Image src="/logo.png" alt="Agenly Logo" width={36} height={36} className="object-contain" />
+          <Image src="/logo.webp" alt="Agenly Logo" width={36} height={36} className="object-contain" />
           <span className="text-lg font-bold text-white tracking-widest">AGENLY</span>
         </Link>
         <button

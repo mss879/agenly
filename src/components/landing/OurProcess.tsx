@@ -45,12 +45,14 @@ export default function OurProcess() {
           </p>
           
           <div className="pt-6">
-            <Link href="/login">
-              <button className="inline-flex items-center justify-center font-bold bg-white border border-gray-200 shadow-sm h-12 rounded-full px-8 text-base hover:bg-purple-600 hover:border-purple-600 hover:text-white transition-all duration-300 group">
+            <div className="relative inline-flex">
+              <button disabled className="inline-flex items-center justify-center font-bold bg-white border border-gray-200 shadow-sm h-12 rounded-full px-8 text-base opacity-70 cursor-not-allowed">
                 Start Building Free
-                <ArrowUpRight className="ml-2 w-5 h-5 group-hover:rotate-45 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
               </button>
-            </Link>
+              <span className="absolute -top-2.5 -right-2.5 bg-gray-900 text-white text-[9px] font-bold px-2 py-0.5 rounded-full border border-gray-700 shadow-xl z-20 whitespace-nowrap tracking-widest uppercase">
+                Coming Soon
+              </span>
+            </div>
           </div>
         </div>
         
