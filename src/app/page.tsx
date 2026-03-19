@@ -263,7 +263,7 @@ export default function HomePage() {
                   priority
                 />
                 <Image
-                  src="/agenly-mobile.png"
+                  src="/agenly-mobile.webp"
                   alt="Agenly AI Platform"
                   width={600}
                   height={800}
