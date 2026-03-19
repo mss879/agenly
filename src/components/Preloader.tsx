@@ -33,15 +33,16 @@ export default function Preloader({ onComplete }: { onComplete: () => void }) {
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
+    const isMob = window.innerWidth < 768;
+    const delay = isMob ? 2500 : 4200;
     
-    // Sequence needs ~4s to draw linearly across
     const timer = setTimeout(() => {
       onComplete();
       setTimeout(() => {
         setIsVisible(false);
         document.body.style.overflow = "auto";
-      }, 1200); 
-    }, 4200);
+      }, 800); 
+    }, delay);
 
     return () => clearTimeout(timer);
   }, [onComplete]);

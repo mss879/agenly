@@ -22,7 +22,7 @@ const processSteps = [
 
 export default function OurProcess() {
   return (
-    <section id="how-it-works" className="py-24 sm:py-32 bg-[#fafafa] text-gray-900 relative z-10">
+    <section id="how-it-works" className="py-16 sm:py-24 md:py-32 bg-[#fafafa] text-gray-900 relative z-10">
       <div className="max-w-7xl mx-auto px-6 sm:px-12 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start relative">
         
         {/* Sticky Left Column */}

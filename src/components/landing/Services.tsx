@@ -34,7 +34,7 @@ const useCases = [
 
 export default function Services() {
   return (
-    <section className="py-32 sm:py-40 bg-white text-gray-900 relative z-10 overflow-hidden">
+    <section className="py-16 sm:py-24 md:py-32 lg:py-40 bg-white text-gray-900 relative z-10 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 sm:px-10">
         
         {/* Header */}

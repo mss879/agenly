@@ -562,11 +562,20 @@ const features = [
 ];
 
 export default function AnimatedFeatures() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
   return (
-    <section id="features" className="relative z-10 py-32 sm:py-40 px-6 bg-white overflow-hidden">
-      {/* Decorative — reduced blur for performance */}
-      <div className="absolute top-1/4 left-[-10%] w-[30%] h-[30%] bg-purple-500/5 rounded-full blur-[80px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-[-10%] w-[30%] h-[30%] bg-indigo-500/5 rounded-full blur-[80px] pointer-events-none" />
+    <section id="features" className="relative z-10 py-20 md:py-32 sm:py-40 px-6 bg-white overflow-hidden">
+      {/* Decorative — hidden on mobile */}
+      <div className="hidden md:block absolute top-1/4 left-[-10%] w-[30%] h-[30%] bg-purple-500/5 rounded-full blur-[80px] pointer-events-none" />
+      <div className="hidden md:block absolute bottom-1/4 right-[-10%] w-[30%] h-[30%] bg-indigo-500/5 rounded-full blur-[80px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-20 lg:mb-32">
@@ -581,20 +590,20 @@ export default function AnimatedFeatures() {
         <div className="space-y-16 lg:space-y-32">
           {features.map((f, i) => (
             <div key={f.title} className="group relative">
-              <div className={`flex flex-col ${i % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"} items-center gap-12 lg:gap-20 relative z-10`}>
+              <div className={`flex flex-col ${i % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"} items-center gap-8 md:gap-12 lg:gap-20 relative z-10`}>
 
-                {/* Visual / Mockup Side — only renders when in view */}
-                <InViewMockup Mockup={f.Mockup} />
+                {/* Visual / Mockup Side — desktop only for performance */}
+                {!isMobile && <InViewMockup Mockup={f.Mockup} />}
 
                 {/* Text Side */}
-                <div className="w-full lg:w-1/2 flex flex-col justify-center">
-                  <div className="mb-6 inline-flex">
+                <div className={`w-full ${isMobile ? '' : 'lg:w-1/2'} flex flex-col justify-center`}>
+                  <div className="mb-4 md:mb-6 inline-flex">
                     <span className="px-5 py-2 rounded-full bg-white border border-gray-200 shadow-sm text-xs sm:text-sm font-bold text-purple-600 uppercase tracking-[0.15em] hover:border-purple-300 transition-colors">
                       {f.tag}
                     </span>
                   </div>
-                  <h3 className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 mb-6 tracking-tight leading-[1.1]">{f.title}</h3>
-                  <p className="text-lg sm:text-lg text-gray-600 font-medium leading-relaxed max-w-lg">{f.desc}</p>
+                  <h3 className="text-2xl sm:text-4xl lg:text-5xl font-black text-gray-900 mb-4 md:mb-6 tracking-tight leading-[1.1]">{f.title}</h3>
+                  <p className="text-base sm:text-lg text-gray-600 font-medium leading-relaxed max-w-lg">{f.desc}</p>
                 </div>
 
               </div>

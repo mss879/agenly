@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { MousePointerClick, BadgeDollarSign, Rocket, ShieldCheck } from "lucide-react";
 import Preloader from "@/components/Preloader";
@@ -39,28 +39,36 @@ const benefits = [
 export default function HomePage() {
   const [isPreloaderDone, setIsPreloaderDone] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const headingText = "CREATE, TRAIN, AND DEPLOY AI AGENTS FROM ONE PLATFORM";
   const words = headingText.split(" ");
 
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
   const { scrollY } = useScroll();
-  const heroScale = useTransform(scrollY, [0, 800], [1, 0.9]);
-  const heroOpacity = useTransform(scrollY, [0, 800], [1, 0.3]);
+  const heroScale = useTransform(scrollY, [0, 800], [1, isMobile ? 1 : 0.9]);
+  const heroOpacity = useTransform(scrollY, [0, 800], [1, isMobile ? 1 : 0.3]);
 
   return (
-    <div className="min-h-screen bg-[#0A0A0B] text-white relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#0A0A0B] text-white relative overflow-x-clip">
       <AnimatePresence>
         {!isPreloaderDone && (
           <Preloader key="preloader" onComplete={() => setIsPreloaderDone(true)} />
         )}
       </AnimatePresence>
 
-      {/* Ambient Glow Orbs — absolute instead of fixed to avoid constant GPU compositing */}
-      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-[#7C3AED]/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-[#8B5CF6]/8 rounded-full blur-[120px] pointer-events-none" />
+      {/* Ambient Glow Orbs — hidden on mobile for performance */}
+      <div className="hidden md:block absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-[#7C3AED]/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="hidden md:block absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-[#8B5CF6]/8 rounded-full blur-[120px] pointer-events-none" />
 
       {/* ─── Hero + Inner Navbar ─── */}
       <section className="sticky top-0 z-0 h-screen overflow-hidden" style={{ padding: "9px", paddingBottom: "12px" }}>
-        <motion.div style={{ scale: heroScale, opacity: heroOpacity, transformOrigin: 'top' }} className="w-full h-full relative transform-gpu">
+        <motion.div style={isMobile ? {} : { scale: heroScale, opacity: heroOpacity, transformOrigin: 'top' }} className="w-full h-full relative transform-gpu">
           {/* Top Center Cutout for Menu — desktop only */}
           {isPreloaderDone && (
             <motion.div
@@ -238,10 +246,10 @@ export default function HomePage() {
 
 
       {/* ─── Light Mode Content Wrapper ─── */}
-      <div className="bg-[#fafafa] relative z-20 rounded-t-[3rem] sm:rounded-t-[4rem] shadow-[0_-20px_50px_rgba(0,0,0,0.2)]">
+      <div className="bg-[#fafafa] relative z-20 rounded-t-[2rem] sm:rounded-t-[3rem] md:rounded-t-[4rem] shadow-[0_-10px_30px_rgba(0,0,0,0.15)] md:shadow-[0_-20px_50px_rgba(0,0,0,0.2)]">
 
         {/* ─── Benefits / About ─── */}
-        <section id="benefits" className="relative z-10 py-32 sm:py-40 px-6">
+        <section id="benefits" className="relative z-10 py-16 sm:py-24 md:py-32 lg:py-40 px-6">
           <div className="max-w-6xl mx-auto relative z-10">
             <div className="text-center max-w-3xl mx-auto mb-20">
               <p className="text-xs font-bold text-purple-600 uppercase tracking-[0.3em] mb-6">Why Agenly</p>
@@ -308,7 +316,7 @@ export default function HomePage() {
         <Services />
 
         {/* ─── CTA ─── */}
-        <section className="relative z-10 py-32 sm:py-40 px-6 bg-[#fafafa]">
+        <section className="relative z-10 py-16 sm:py-24 md:py-32 lg:py-40 px-6 bg-[#fafafa]">
           <div className="max-w-4xl mx-auto relative">
             {/* Intense Outer Glow */}
             <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-indigo-500/10 to-purple-500/20 rounded-[3rem] blur-2xl pointer-events-none" />
