@@ -68,13 +68,13 @@ export async function POST(
         // If force mode, clear old chunks and embeddings for this file first
         if (force || file.ingestion_status !== "pending") {
           console.log(`[Ingest] Clearing old data for file ${file.id} (${file.file_name})`);
-          
+
           // Delete embeddings for chunks of this file
           const { data: oldChunks } = await admin
             .from("knowledge_chunks")
             .select("id")
             .eq("file_id", file.id);
-          
+
           if (oldChunks && oldChunks.length > 0) {
             const chunkIds = oldChunks.map(c => c.id);
             await admin
@@ -82,13 +82,13 @@ export async function POST(
               .delete()
               .in("chunk_id", chunkIds);
           }
-          
+
           // Delete old chunks
           await admin
             .from("knowledge_chunks")
             .delete()
             .eq("file_id", file.id);
-          
+
           console.log(`[Ingest] Cleared ${oldChunks?.length || 0} old chunks for file ${file.file_name}`);
         }
 

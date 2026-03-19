@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createAgentSchema } from "@/lib/schemas";
+import { checkLimit, getUserWorkspaceId, isAdmin as checkIsAdmin } from "@/lib/services/plan-service";
 
 // GET /api/agents — list agents for user's workspace
 export async function GET() {
@@ -58,6 +59,25 @@ export async function POST(request: NextRequest) {
 
     // Use admin client to bypass RLS for workspace lookup  
     const admin = createAdminClient();
+
+    // --- Plan limit check ---
+    const userIsAdmin = await checkIsAdmin(user.id);
+    if (!userIsAdmin) {
+      const wsId = await getUserWorkspaceId(user.id);
+      if (wsId) {
+        const { count } = await admin
+          .from("agents")
+          .select("*", { count: "exact", head: true })
+          .eq("workspace_id", wsId);
+
+        const limitCheck = await checkLimit(wsId, "maxAgents", count ?? 0);
+        if (!limitCheck.allowed) {
+          return NextResponse.json({
+            error: `Agent limit reached (${limitCheck.current}/${limitCheck.limit}). Upgrade to ${limitCheck.requiredPlan || "a higher plan"} to create more agents.`,
+          }, { status: 403 });
+        }
+      }
+    }
 
     const { data: membership, error: memberError } = await admin
       .from("workspace_members")

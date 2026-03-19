@@ -43,6 +43,42 @@ export const agentUsageLimitsSchema = z.object({
   max_storage_bytes: z.number().int().positive().optional(),
 });
 
+// ─── Agent Flows ───
+export const agentFlowStepSchema = z.object({
+  type: z.enum(["message", "collect"]),
+  content: z.string().max(2000).optional().default(""),
+  field: z.string().max(100).optional().default(""),
+  prompt: z.string().max(1000).optional().default(""),
+  validation: z.enum(["none", "required", "email", "phone", "number"]).optional().default("none"),
+});
+
+export const agentFlowTriggerSchema = z.object({
+  type: z.enum(["keyword", "intent"]),
+  keywords: z.array(z.string().max(100)).optional().default([]),
+});
+
+export const agentFlowSchema = z.object({
+  id: z.string(),
+  name: z.string().min(1).max(200),
+  enabled: z.boolean().default(true),
+  trigger: agentFlowTriggerSchema,
+  steps: z.array(agentFlowStepSchema).min(1).max(20),
+  priority: z.number().int().min(1).max(100).default(1),
+});
+
+// ─── Agent Guardrails ───
+export const agentGuardrailsSchema = z.object({
+  enabled: z.boolean().optional().default(false),
+  blocked_topics: z.array(z.string().max(200)).optional().default([]),
+  allowed_topics: z.array(z.string().max(200)).optional().default([]),
+  blocked_response: z.string().max(1000).optional().default("I can only help with questions related to our products and services. Is there something else I can assist you with?"),
+  max_response_length: z.number().int().min(50).max(5000).optional(),
+  require_knowledge_base: z.boolean().optional().default(false),
+  hallucination_guard: z.boolean().optional().default(false),
+  pii_redaction: z.boolean().optional().default(false),
+  custom_rules: z.array(z.string().max(500)).optional().default([]),
+});
+
 export const agentSchema = z.object({
   id: z.string().uuid(),
   workspace_id: z.string().uuid(),
@@ -55,6 +91,17 @@ export const agentSchema = z.object({
   status: z.enum(AGENT_STATUSES).default("draft"),
   branding: agentBrandingSchema.optional(),
   usage_limits: agentUsageLimitsSchema.optional().default({}),
+  flows: z.array(agentFlowSchema).optional().default([]),
+  guardrails: agentGuardrailsSchema.optional().nullable().default({
+    enabled: false,
+    blocked_topics: [],
+    allowed_topics: [],
+    blocked_response: "I can only help with questions related to our products and services. Is there something else I can assist you with?",
+    require_knowledge_base: false,
+    hallucination_guard: false,
+    pii_redaction: false,
+    custom_rules: [],
+  }),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
 });
@@ -68,6 +115,17 @@ export const createAgentSchema = z.object({
   embedding_model: z.string().optional().default("gemini-embedding-2-preview"),
   branding: agentBrandingSchema.optional(),
   usage_limits: agentUsageLimitsSchema.optional().default({}),
+  flows: z.array(agentFlowSchema).optional().default([]),
+  guardrails: agentGuardrailsSchema.optional().nullable().default({
+    enabled: false,
+    blocked_topics: [],
+    allowed_topics: [],
+    blocked_response: "I can only help with questions related to our products and services. Is there something else I can assist you with?",
+    require_knowledge_base: false,
+    hallucination_guard: false,
+    pii_redaction: false,
+    custom_rules: [],
+  }),
 });
 
 export const updateAgentSchema = createAgentSchema.partial().extend({

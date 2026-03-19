@@ -2,13 +2,14 @@
 import { useEffect, useState, use } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Settings, BookOpen, MessageSquare, Rocket, ArrowLeft, Plug } from "lucide-react";
+import { Settings, BookOpen, MessageSquare, Rocket, ArrowLeft, Plug, Brain } from "lucide-react";
 import Image from "next/image";
 
 const tabs = [
   { href: "settings", label: "Settings", icon: Settings },
   { href: "knowledge", label: "Knowledge", icon: BookOpen },
   { href: "integrations", label: "Integrations", icon: Plug },
+  { href: "behavior", label: "AI Behavior", icon: Brain },
   { href: "preview", label: "Preview", icon: MessageSquare },
   { href: "deploy", label: "Deploy", icon: Rocket },
 ];

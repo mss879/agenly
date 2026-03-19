@@ -12,12 +12,15 @@ import {
   ChevronRight,
   Menu,
   X,
+  Settings,
+  Shield,
 } from "lucide-react";
 
 const navItems = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/dashboard/agents", label: "Agents", icon: Bot },
   { href: "/dashboard/usage", label: "Usage & Billing", icon: BarChart3 },
+  { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
 export default function Sidebar() {
@@ -25,6 +28,43 @@ export default function Sidebar() {
   const router = useRouter();
   const supabase = createClient();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [userName, setUserName] = useState("");
+  const [planName, setPlanName] = useState("");
+  const [trialDays, setTrialDays] = useState<number | null>(null);
+  const [subStatus, setSubStatus] = useState("");
+
+  useEffect(() => {
+    checkProfile();
+    fetchPlanInfo();
+  }, []);
+
+  async function checkProfile() {
+    try {
+      const res = await fetch("/api/auth/profile");
+      const data = await res.json();
+      if (data.profile) {
+        setIsAdmin(data.profile.role === "admin");
+        setUserName(`${data.profile.first_name || ""} ${data.profile.last_name || ""}`.trim());
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  async function fetchPlanInfo() {
+    try {
+      const res = await fetch("/api/plan/current");
+      const data = await res.json();
+      if (data.selectedPlan) {
+        setPlanName(data.selectedPlan);
+        setSubStatus(data.subscriptionStatus || "");
+        if (data.isTrialActive) setTrialDays(data.trialDaysRemaining);
+      }
+    } catch {
+      // ignore
+    }
+  }
 
   // Close sidebar on route change
   useEffect(() => {
@@ -67,7 +107,14 @@ export default function Sidebar() {
         </button>
       </div>
 
-      <nav className="flex-1 px-4 py-2 mt-4 lg:mt-8 space-y-2 flex flex-col">
+      {/* User greeting */}
+      {userName && (
+        <div className="px-6 pb-2">
+          <p className="text-xs text-white/40 truncate">Hello, <span className="text-white/70 font-medium">{userName}</span></p>
+        </div>
+      )}
+
+      <nav className="flex-1 px-4 py-2 mt-4 lg:mt-4 space-y-2 flex flex-col">
         {navItems.map((item) => {
           const isActive =
             item.href === "/dashboard"
@@ -89,6 +136,42 @@ export default function Sidebar() {
             </Link>
           );
         })}
+
+        {/* Admin Panel link */}
+        {isAdmin && (
+          <Link
+            href="/admin"
+            className="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-base font-medium transition-all duration-300 group text-red-400/70 hover:text-red-400 hover:bg-red-500/5 mt-2 border border-red-500/10"
+          >
+            <Shield size={18} className="text-red-400/50 group-hover:text-red-400" />
+            Admin Panel
+          </Link>
+        )}
+
+        {/* Plan badge */}
+        {planName && !isAdmin && (
+          <div className="mt-auto pt-4">
+            <Link
+              href="/dashboard/billing"
+              className="block px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.06] transition-all"
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-semibold text-white/80 capitalize">{planName} Plan</span>
+                {planName !== "enterprise" && (
+                  <span className="text-[10px] font-semibold text-[#8B5CF6] tracking-wide">UPGRADE</span>
+                )}
+              </div>
+              {trialDays !== null && (
+                <p className="text-[10px] text-amber-400">
+                  ⏳ {trialDays} day{trialDays !== 1 ? "s" : ""} left in trial
+                </p>
+              )}
+              {subStatus === "active" && (
+                <p className="text-[10px] text-emerald-400">✓ Active subscription</p>
+              )}
+            </Link>
+          </div>
+        )}
       </nav>
 
       {/* Bottom actions */}

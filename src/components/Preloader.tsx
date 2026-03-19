@@ -62,7 +62,7 @@ export default function Preloader({ onComplete }: { onComplete: () => void }) {
         animate={{ opacity: 1 }}
         transition={{ duration: 2 }}
       >
-        <div className="w-[70vw] h-[70vw] max-w-[900px] max-h-[900px] bg-[#7C3AED]/15 rounded-full blur-[160px]" />
+        <div className="w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] bg-[#7C3AED]/12 rounded-full blur-[100px]" />
       </motion.div>
 
       <div className="relative z-10 w-full max-w-3xl md:max-w-4xl lg:max-w-5xl px-6 flex flex-col items-center justify-center">

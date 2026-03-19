@@ -11,14 +11,18 @@
 @theme {
   --color-primary-50: #F8EBFA;
   --color-primary-100: #F1DAF3;
-  --color-primary-200: #E6C7E6; /* Lilac Mist */
+  --color-primary-200: #E6C7E6;
+  /* Lilac Mist */
   --color-primary-300: #C9A2C4;
-  --color-primary-400: #A3779D; /* Soft Violet */
+  --color-primary-400: #A3779D;
+  /* Soft Violet */
   --color-primary-500: #814E8F;
-  --color-primary-600: #663399; /* Royal Amethyst */
+  --color-primary-600: #663399;
+  /* Royal Amethyst */
   --color-primary-700: #50237C;
   --color-primary-800: #3E1960;
-  --color-primary-900: #2E1A47; /* Midnight Plum */
+  --color-primary-900: #2E1A47;
+  /* Midnight Plum */
   --color-primary-950: #1F1131;
 
   --color-surface-50: #fafafa;
@@ -70,10 +74,12 @@
     height: 0px;
     display: none;
   }
-  
+
   html {
-    scrollbar-width: none; /* Firefox */
+    scrollbar-width: none;
+    /* Firefox */
   }
+
   ::-webkit-scrollbar-thumb:hover {
     background: var(--color-surface-600);
   }
@@ -86,8 +92,13 @@
   color: inherit;
 }
 
-.prose-chat > *:first-child { margin-top: 0; }
-.prose-chat > *:last-child { margin-bottom: 0; }
+.prose-chat>*:first-child {
+  margin-top: 0;
+}
+
+.prose-chat>*:last-child {
+  margin-bottom: 0;
+}
 
 /* Headings */
 .prose-chat h1,
@@ -99,9 +110,18 @@
   margin-bottom: 0.5em;
   color: #f1f5f9;
 }
-.prose-chat h1 { font-size: 1.25rem; }
-.prose-chat h2 { font-size: 1.125rem; }
-.prose-chat h3 { font-size: 1rem; }
+
+.prose-chat h1 {
+  font-size: 1.25rem;
+}
+
+.prose-chat h2 {
+  font-size: 1.125rem;
+}
+
+.prose-chat h3 {
+  font-size: 1rem;
+}
 
 /* Paragraphs */
 .prose-chat p {
@@ -109,8 +129,14 @@
 }
 
 /* Bold & italic */
-.prose-chat strong { font-weight: 600; color: #f8fafc; }
-.prose-chat em { font-style: italic; }
+.prose-chat strong {
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.prose-chat em {
+  font-style: italic;
+}
 
 /* Lists */
 .prose-chat ul {
@@ -118,16 +144,19 @@
   padding-left: 1.5em;
   margin: 0.5em 0;
 }
+
 .prose-chat ol {
   list-style: decimal;
   padding-left: 1.5em;
   margin: 0.5em 0;
 }
+
 .prose-chat li {
   margin: 0.25em 0;
 }
-.prose-chat li > ul,
-.prose-chat li > ol {
+
+.prose-chat li>ul,
+.prose-chat li>ol {
   margin: 0.25em 0;
 }
 
@@ -138,9 +167,11 @@
   margin: 0.75em 0;
   font-size: 0.8125rem;
 }
+
 .prose-chat thead {
   border-bottom: 2px solid rgba(99, 102, 241, 0.3);
 }
+
 .prose-chat th {
   padding: 0.5em 0.75em;
   text-align: left;
@@ -148,13 +179,16 @@
   color: #a5b4fc;
   white-space: nowrap;
 }
+
 .prose-chat td {
   padding: 0.4em 0.75em;
   border-bottom: 1px solid rgba(51, 65, 85, 0.5);
 }
+
 .prose-chat tr:last-child td {
   border-bottom: none;
 }
+
 .prose-chat tr:hover td {
   background: rgba(99, 102, 241, 0.05);
 }
@@ -168,6 +202,7 @@
   font-family: 'Fira Code', 'Cascadia Code', monospace;
   color: #a5b4fc;
 }
+
 .prose-chat pre {
   background: rgba(15, 23, 42, 0.6);
   border: 1px solid rgba(51, 65, 85, 0.5);
@@ -176,6 +211,7 @@
   overflow-x: auto;
   margin: 0.75em 0;
 }
+
 .prose-chat pre code {
   background: none;
   padding: 0;
@@ -197,6 +233,7 @@
   text-decoration: underline;
   text-underline-offset: 2px;
 }
+
 .prose-chat a:hover {
   color: #a5b4fc;
 }
@@ -213,13 +250,17 @@
   position: relative;
   background: radial-gradient(150% 100% at 50% 0%, #A855F7 0%, #7C3AED 40%, #4C1D95 100%);
   border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 
-    0 16px 32px -4px rgba(124, 58, 237, 0.6), /* Vibrant outer glow */
-    inset 0 2px 4px rgba(255, 255, 255, 0.7), /* Top subtle highlight edge */
-    inset 0 -4px 8px rgba(0, 0, 0, 0.5),      /* Bottom structural shadow */
-    inset 0 -16px 24px rgba(76, 29, 149, 0.9); /* Sub-surface color depth */
+  box-shadow:
+    0 16px 32px -4px rgba(124, 58, 237, 0.6),
+    /* Vibrant outer glow */
+    inset 0 2px 4px rgba(255, 255, 255, 0.7),
+    /* Top subtle highlight edge */
+    inset 0 -4px 8px rgba(0, 0, 0, 0.5),
+    /* Bottom structural shadow */
+    inset 0 -16px 24px rgba(76, 29, 149, 0.9);
+  /* Sub-surface color depth */
   border-radius: 12px;
-  overflow: hidden; 
+  overflow: hidden;
 }
 
 /* Sharp top glossy reflection for pill/orb feel */

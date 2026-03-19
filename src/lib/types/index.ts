@@ -4,6 +4,9 @@ import type {
   agentSchema,
   agentBrandingSchema,
   agentUsageLimitsSchema,
+  agentFlowSchema,
+  agentFlowStepSchema,
+  agentGuardrailsSchema,
   deploymentSchema,
   knowledgeFileSchema,
   conversationSchema,
@@ -26,6 +29,9 @@ export type Workspace = z.infer<typeof workspaceSchema>;
 export type Agent = z.infer<typeof agentSchema>;
 export type AgentBranding = z.infer<typeof agentBrandingSchema>;
 export type AgentUsageLimits = z.infer<typeof agentUsageLimitsSchema>;
+export type AgentFlow = z.infer<typeof agentFlowSchema>;
+export type AgentFlowStep = z.infer<typeof agentFlowStepSchema>;
+export type AgentGuardrails = z.infer<typeof agentGuardrailsSchema>;
 export type Deployment = z.infer<typeof deploymentSchema>;
 export type KnowledgeFile = z.infer<typeof knowledgeFileSchema>;
 export type Conversation = z.infer<typeof conversationSchema>;

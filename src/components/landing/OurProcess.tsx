@@ -59,7 +59,7 @@ export default function OurProcess() {
           {processSteps.map((step) => (
             <div 
               key={step.num}
-              className="group p-8 sm:p-10 rounded-3xl border border-gray-200/60 bg-white/70 backdrop-blur-xl hover:border-purple-500/50 hover:shadow-[0_20px_40px_-15px_rgba(124,58,237,0.1)] transition-all duration-500 relative overflow-hidden"
+              className="group p-8 sm:p-10 rounded-3xl border border-gray-200/60 bg-white hover:border-purple-500/50 hover:shadow-[0_12px_30px_-15px_rgba(124,58,237,0.12)] transition-all duration-300 relative overflow-hidden"
             >
               {/* Subtle hover glow inside card */}
               <div className="absolute inset-0 bg-gradient-to-br from-purple-500/0 to-purple-500/0 group-hover:from-purple-500/[0.03] transition-colors duration-500 pointer-events-none" />

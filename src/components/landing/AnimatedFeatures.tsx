@@ -23,7 +23,7 @@ const TypeWords = memo(({ text, start, end, className, cursorStart, cursorEnd }:
               repeat: Infinity
             }}
             className="inline"
-            style={{ willChange: "opacity" }}
+            style={{ }}
           >
             {word}{" "}
           </motion.span>
@@ -35,7 +35,7 @@ const TypeWords = memo(({ text, start, end, className, cursorStart, cursorEnd }:
           animate={{ opacity: [0, 0, 1, 1, 0] }}
           transition={{ duration: 12, times: [0, cursorStart - 0.0001, cursorStart, cursorEnd, cursorEnd + 0.0001], repeat: Infinity }}
           className="inline-block"
-          style={{ willChange: "opacity" }}
+          style={{ }}
         >
           <motion.span
             animate={{ opacity: [1, 0, 1] }}
@@ -363,7 +363,7 @@ const KnowledgeMockup = () => (
       }}
       transition={{ duration: 10, times: [0, 0.02, 0.15, 0.2, 1], repeat: Infinity, ease: "easeInOut" }}
       className="absolute top-1/2 left-1/2 z-50 flex flex-col items-center pointer-events-none origin-bottom-right transform-gpu"
-      style={{ willChange: "transform, opacity" }}
+      style={{ }}
     >
       <div className="bg-white p-4 rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)] border border-purple-200/60 flex flex-col items-center gap-2 transform -rotate-6 translate-x-[-50%] translate-y-[-50%]">
         <FileText size={28} className="text-purple-600" />
@@ -384,7 +384,7 @@ const KnowledgeMockup = () => (
       }}
       transition={{ duration: 10, times: [0, 0.45, 0.47, 0.6, 0.65, 1], repeat: Infinity, ease: "easeInOut" }}
       className="absolute top-1/2 left-1/2 z-50 flex flex-col items-center pointer-events-none origin-bottom-right transform-gpu"
-      style={{ willChange: "transform, opacity" }}
+      style={{ }}
     >
       <div className="bg-white p-4 rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)] border border-indigo-200/60 flex flex-col items-center gap-2 transform rotate-6 translate-x-[-50%] translate-y-[-50%]">
         <FileText size={28} className="text-indigo-600" />
@@ -531,7 +531,7 @@ const InViewMockup = ({ Mockup }: { Mockup: React.ComponentType }) => {
   return (
     <div
       ref={ref}
-      className="w-full lg:w-1/2 relative bg-white/80 rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-200/60 overflow-visible flex flex-col group-hover:shadow-[0_20px_50px_rgb(124,58,237,0.1)] group-hover:-translate-y-1 transition-shadow duration-500 transform-gpu"
+      className="w-full lg:w-1/2 relative bg-white rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-200/60 overflow-visible flex flex-col group-hover:shadow-[0_12px_30px_rgb(124,58,237,0.08)] group-hover:-translate-y-1 transition-all duration-300 transform-gpu"
     >
       <div className="flex flex-1 w-full bg-gray-50/50 relative">
         {isInView && <Mockup />}
@@ -564,9 +564,9 @@ const features = [
 export default function AnimatedFeatures() {
   return (
     <section id="features" className="relative z-10 py-32 sm:py-40 px-6 bg-white overflow-hidden">
-      {/* Decorative Blur Backgrounds */}
-      <div className="absolute top-1/4 left-[-10%] w-[40%] h-[40%] bg-purple-500/10 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-[-10%] w-[40%] h-[40%] bg-indigo-500/10 rounded-full blur-[150px] pointer-events-none" />
+      {/* Decorative — reduced blur for performance */}
+      <div className="absolute top-1/4 left-[-10%] w-[30%] h-[30%] bg-purple-500/5 rounded-full blur-[80px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-[-10%] w-[30%] h-[30%] bg-indigo-500/5 rounded-full blur-[80px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-20 lg:mb-32">
