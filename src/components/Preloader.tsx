@@ -127,8 +127,8 @@ export default function Preloader({ onComplete }: { onComplete: () => void }) {
           <div className="overflow-hidden pb-1">
             <motion.h1 
               className="text-4xl sm:text-5xl md:text-6xl font-black font-beras text-white tracking-[0.3em] ml-[0.3em] drop-shadow-[0_0_40px_rgba(124,58,237,0.6)]"
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
+              initial={{ y: "150%", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 2.8, duration: 1.2, ease: [0.16, 1, 0.3, 1] }} 
             >
               AGENLY
